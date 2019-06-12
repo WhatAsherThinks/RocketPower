@@ -6,27 +6,25 @@ using UnityEngine;
 public class Rocket : MonoBehaviour
 {
     Rigidbody rigidBody;
+    AudioSource boosterSound;
+    bool soundOn;
 
     // Start is called before the first frame update
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
+        boosterSound = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
+        Thrust();
+        Rotate();
     }
 
-    private void ProcessInput()
+    private void Rotate()
     {
-        if (Input.GetKey(KeyCode.Space))
-        {
-            rigidBody.AddRelativeForce(Vector3.up);
-            print("space pressed");
-        }
-
         if (Input.GetKey(KeyCode.A))
         {
             transform.Rotate(Vector3.forward);
@@ -38,5 +36,23 @@ public class Rocket : MonoBehaviour
             print("Rotating Right");
         }
 
+    }
+
+    private void Thrust()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rigidBody.AddRelativeForce(Vector3.up);
+            //To make sure the sound doesnt layer. 
+            if (!boosterSound.isPlaying)
+            {
+                boosterSound.Play();
+            }
+            print("space pressed");
+        }
+        else
+        {
+            boosterSound.Stop();
+        }
     }
 }
