@@ -2,15 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
     //SerializeField makes it avaialble to Unity
     [SerializeField] float rcsThrust = 100f; //rcs = reaction control system
-    [SerializeField] float mainThrust = 100f;
+    [SerializeField] float mainThrust = 150f;
+
     Rigidbody rigidBody;
     AudioSource boosterSound;
-    bool soundOn;
+
+    enum State { Alive, Dying, Transcending};
+    State state = State.Alive;
+
 
     // Start is called before the first frame update
     void Start()
@@ -22,8 +27,11 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
+        if (state == State.Alive)
+        {
+            Thrust();
+            Rotate();
+        }
     }
 
     void OnCollisionEnter(Collision collision)
@@ -34,11 +42,28 @@ public class Rocket : MonoBehaviour
                 //do nothing
                 print("ok");
                 break;
+            case "Finish":
+                print("win");
+                state = State.Transcending;
+                Invoke("LoadNextLevel", 1f); //parameterize time
+                break;
             default:
                 print("dead");
+                state = State.Dying;
+                Invoke("LoadLevel1", 1f);
                 break;
         }
         print("collided");
+    }
+
+    private void LoadLevel1()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    private void LoadNextLevel()
+    {
+        SceneManager.LoadScene(1);
     }
 
     private void Rotate()
