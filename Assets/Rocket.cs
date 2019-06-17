@@ -9,6 +9,8 @@ public class Rocket : MonoBehaviour
     //SerializeField makes it avaialble to Unity
     [SerializeField] float rcsThrust = 100f; //rcs = reaction control system
     [SerializeField] float mainThrust = 100f;
+    [SerializeField] float loadLevelDelay = 2f;
+
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip dyingSound;
     [SerializeField] AudioClip successSound;
@@ -73,7 +75,7 @@ public class Rocket : MonoBehaviour
         audioSource.Stop();
         audioSource.PlayOneShot(successSound);
         successParticles.Play();
-        Invoke("LoadNextLevel", 2f); //parameterize time
+        Invoke("LoadNextLevel", loadLevelDelay); 
     }
 
     private void StartDeathSequence()
@@ -82,7 +84,7 @@ public class Rocket : MonoBehaviour
         audioSource.Stop();
         audioSource.PlayOneShot(dyingSound);
         deathParticles.Play();
-        Invoke("LoadLevel1", 2f);
+        Invoke("LoadLevel1", loadLevelDelay);
     }
 
     private void LoadLevel1()
@@ -133,7 +135,8 @@ public class Rocket : MonoBehaviour
 
     private void ApplyThrust()
     {
-        rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+        //multiplying by time.deltatime makes it frame rate independent
+        rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
         //To make sure the sound doesnt layer. 
         if (!audioSource.isPlaying)
         {
