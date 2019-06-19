@@ -25,7 +25,7 @@ public class Rocket : MonoBehaviour
     enum State { Alive, Dying, Transcending};
     State state = State.Alive;
 
-    bool collisionEnabled = true;
+    [SerializeField] bool collisionEnabled = true;
 
 
     // Start is called before the first frame update
@@ -113,7 +113,19 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(1);
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentScene + 1;
+        /* if the next scene is larger than index in build settings
+        (ex: 9 scenes in build settings = 8index. So if the next level is index9, go to level 1.
+        There is no index 9 at the moment.) */
+        if (nextSceneIndex ==  SceneManager.sceneCountInBuildSettings)
+        {
+            LoadLevel1();
+        }
+        else
+        {
+            SceneManager.LoadScene(nextSceneIndex);
+        }
     }
 
     private void RespondToRotateInput()
